@@ -443,7 +443,7 @@ footer nav a:hover{opacity:1}
 {
  const partners=[["roda-jc","Roda JC",60],["vil","VIL",40],["cinesud","CineSud",30],["provincie-limburg","Provincie Limburg",64],["lvo","LVO, Limburgs Voortgezet Onderwijs",46],["movare","Movare",46],["universiteit-maastricht","Universiteit Maastricht",60]];
  const track=document.getElementById('track');
- const row=partners.map(([f,n,h])=>'<span class="logo"><img src="logos/'+f+'.png" alt="'+n+'" style="height:'+h+'px" loading="lazy"></span>').join('');
+ const row=partners.map(([f,n,h])=>'<span class="logo"><img src="logos/'+f+'.png" alt="'+n+'" style="height:'+h+'px"></span>').join('');
  track.innerHTML=row+'<span aria-hidden="true" style="display:contents">'+row.replace(/alt="[^"]*"/g,'alt=""')+'</span>';
 
  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
