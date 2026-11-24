@@ -68,13 +68,16 @@ nav.top a:hover{opacity:1;background-size:100% 1px}
 .film-grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(28px,5vw,80px);align-items:end}
 .film-grid .q{font-size:clamp(30px,3.4vw,48px)}
 .label{font-size:15px;opacity:.7;margin-bottom:18px}
-.poster{position:relative;display:block;width:100%;aspect-ratio:16/9;border-radius:6px;overflow:hidden;background:#0a1d17;text-decoration:none;isolation:isolate}
+.poster{position:relative;display:block;width:100%;aspect-ratio:344/240;border-radius:6px;overflow:hidden;background:#0a1d17;text-decoration:none;isolation:isolate}
 .poster svg{position:absolute;inset:0;width:100%;height:100%;transition:transform 1.4s cubic-bezier(.2,.7,.2,1)}
 .poster:hover svg{transform:scale(1.05)}
 .play{position:absolute;left:50%;top:50%;width:clamp(76px,9vw,116px);aspect-ratio:1;translate:-50% -50%;border-radius:50%;background:var(--red);display:grid;place-items:center;transition:scale .4s}
 .poster:hover .play{scale:1.1}
 .play::after{content:"";border-left:22px solid #f4efe6;border-top:13px solid transparent;border-bottom:13px solid transparent;margin-left:6px}
 .poster iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#000}
+.film-live{background:#000}
+.sound{position:absolute;left:16px;bottom:16px;z-index:2;font:500 14px/1 Manrope,sans-serif;color:#f4efe6;background:rgba(13,22,19,.72);border:1px solid rgba(244,239,230,.5);border-radius:999px;min-height:44px;padding:0 18px;cursor:pointer;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);transition:background .3s}
+.sound:hover{background:var(--red);border-color:var(--red)}
 .poster .pl{position:absolute;left:20px;bottom:16px;font-weight:500;color:#f4efe6}
 @media(max-width:760px){.film-grid{grid-template-columns:1fr}}
 
@@ -492,18 +495,35 @@ footer nav a:hover{opacity:1}
 
  // film: op de live site speelt hij in de pagina zelf
  if(window.EMBED_VIDEO){
+  // live site: film speelt vanzelf (zonder geluid, zo staan browsers het toe), knop zet geluid aan
   const poster=document.getElementById('poster');
-  const play=e=>{
-   e.preventDefault();
-   if(poster.querySelector('iframe'))return;
-   const f=document.createElement('iframe');
-   f.src='https://player.vimeo.com/video/1234202506?h=7d473c5042&autoplay=1&title=0&byline=0&portrait=0&color=e5462e';
-   f.allow='autoplay; fullscreen; picture-in-picture';f.allowFullscreen=true;f.title='De Drakenvallei, de film';
-   poster.replaceChildren(f);poster.removeAttribute('href');
-   poster.scrollIntoView({behavior:reduce?'auto':'smooth',block:'center'});
+  const box=document.createElement('div');
+  box.className='poster film-live';box.id='poster';
+  const f=document.createElement('iframe');
+  f.src='https://player.vimeo.com/video/1234202506?h=7d473c5042&autoplay=1&muted=1&loop=1&autopause=0&playsinline=1&title=0&byline=0&portrait=0&dnt=1&color=e5462e';
+  f.allow='autoplay; fullscreen; picture-in-picture';f.allowFullscreen=true;f.title='De Drakenvallei, de film';
+  const snd=document.createElement('button');
+  snd.className='sound';snd.type='button';snd.textContent='Geluid aan';
+  box.append(f,snd);poster.replaceWith(box);
+  let player=null,muted=true;
+  const api=document.createElement('script');
+  api.src='https://player.vimeo.com/api/player.js';
+  api.onload=()=>{player=new Vimeo.Player(f)};
+  document.head.appendChild(api);
+  const toggle=(restart)=>{
+   if(!player)return;
+   muted=!muted;
+   if(!muted&&restart)player.setCurrentTime(0);
+   player.setMuted(muted);if(!muted)player.setVolume(1);
+   player.play().catch(()=>{});
+   snd.textContent=muted?'Geluid aan':'Geluid uit';
   };
-  poster.addEventListener('click',play);
-  document.getElementById('filmCta').addEventListener('click',play);
+  snd.addEventListener('click',()=>toggle(true));
+  document.getElementById('filmCta').addEventListener('click',e=>{
+   e.preventDefault();
+   box.scrollIntoView({behavior:reduce?'auto':'smooth',block:'center'});
+   if(muted)toggle(true);
+  });
  }
 
  // menu: de hand wordt gedeeld
