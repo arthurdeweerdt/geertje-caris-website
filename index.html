@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Geertje Caris · Game Captain</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* VOICE  exclusief, rustig, zelfverzekerd: weinig woorden, veel ruimte, beleving zoals Moooi
+   IDEA   het luxe kaartspel van de Game Captain: elke sectie is een kaart, het menu wordt gedeeld als een hand
+   PICTURE een waaier van vijf geïllustreerde speelkaarten (monogram, draak, vallei, pion, schubben) die je kunt schudden
+   COLOUR nacht-jade grond, bot-papier, drakenrood accent; per sectie vloeit de achtergrond over naar oxblood, saffraan, papier, rood
+   TYPE   Instrument Serif (naam, titels) + Manrope (tekst)
+   LAYOUT hero: kaarten groot in het midden, naam over de volle breedte eronder; telefoon: kaarten, naam, intro onder elkaar */
+:root{--night:#0d1613;--jade:#163a31;--ox:#4a1418;--saf:#efb53d;--bone:#f1ebe1;--red:#e5462e;--ink:#15201c;
+--bg:var(--night);--fg:var(--bone);color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+html{scroll-behavior:smooth;scroll-padding-top:72px}
+body{margin:0;background:var(--bg);color:var(--fg);font:400 16px/1.6 Manrope,system-ui,sans-serif;overflow-x:clip;transition:background-color .9s ease,color .9s ease}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:90;opacity:.09;mix-blend-mode:overlay;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+a{color:inherit}
+h1,h2,h3{font-family:"Instrument Serif",Georgia,serif;font-weight:400;letter-spacing:-.02em;line-height:1.05;text-wrap:balance;margin:0}
+h2{font-size:clamp(38px,5.4vw,76px)}
+h3{font-size:clamp(26px,2.6vw,36px)}
+p{margin:0 0 1em;max-width:62ch}
+em{font-family:"Instrument Serif",Georgia,serif;font-size:1.25em;line-height:1.3}
+.band{padding:clamp(72px,10vw,150px) max(5vw,16px)}
+.wrap{max-width:1240px;margin:0 auto}
+section{background:var(--sbg);color:var(--sfg);position:relative}
+.live section{background:transparent;color:inherit}
+.cta{display:inline-flex;align-items:center;gap:.7em;min-height:48px;padding:0 1.4em;border:1px solid currentColor;border-radius:999px;text-decoration:none;font-weight:500;transition:background .3s,color .3s,gap .3s}
+.cta:hover,.cta:focus-visible{background:var(--fg);color:var(--bg);gap:1.1em}
+.cta span{font-size:1.2em}
+:focus-visible{outline:2px solid var(--red);outline-offset:3px}
+
+/* header */
+header{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px max(5vw,16px);color:inherit;background:color-mix(in srgb,var(--bg) 84%,transparent);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);transition:background-color .9s}
+.mono{display:block;width:48px;height:48px}
+.mono text{font-family:"Instrument Serif",Georgia,serif}
+nav.top{display:flex;gap:clamp(14px,2.4vw,34px);font-size:15px}
+nav.top a{text-decoration:none;opacity:.85;padding:12px 0;background:linear-gradient(currentColor,currentColor) 0 78%/0 1px no-repeat;transition:background-size .35s}
+nav.top a:hover{opacity:1;background-size:100% 1px}
+.menu-btn{font:inherit;color:inherit;background:none;border:1px solid currentColor;border-radius:999px;min-height:44px;padding:0 18px;cursor:pointer;display:none}
+@media(max-width:860px){nav.top{display:none}.menu-btn{display:block}}
+
+/* hero */
+#home{--sbg:var(--night);--sfg:var(--bone);min-height:100svh;display:grid;grid-template-rows:auto 1fr auto;padding-top:96px;padding-bottom:clamp(28px,4vw,56px);overflow:hidden}
+.hero-top{display:flex;justify-content:space-between;align-items:flex-start;gap:24px;flex-wrap:wrap}
+.statement{font-family:"Instrument Serif",Georgia,serif;font-size:clamp(22px,2.2vw,30px);line-height:1.2;max-width:14ch;margin:0}
+.intro{max-width:30ch;margin:0;opacity:.82;font-size:17px}
+.stage{position:relative;perspective:1400px;min-height:clamp(300px,44vh,470px);display:grid;place-items:center;padding-bottom:44px}
+.fan{position:relative;width:clamp(150px,15.5vw,220px);aspect-ratio:560/793;transform-style:preserve-3d;transition:transform .6s cubic-bezier(.2,.7,.2,1)}
+.card{position:absolute;inset:0;border-radius:11px;background:#2a2a22;box-shadow:0 24px 40px -18px rgba(0,0,0,.7),0 0 0 1px rgba(255,255,255,.08);transform-origin:50% 140%;transform:rotate(calc((var(--i) - 2) * 12deg)) translateY(calc(var(--lift,0) * -26px));transition:transform .8s cubic-bezier(.2,.8,.2,1);cursor:pointer;overflow:hidden}
+.card img{display:block;width:100%;height:100%;object-fit:cover;user-select:none}
+.card:hover{--lift:1}
+.dealing .card{transform:rotate(0) translateY(40px) scale(.96)}
+.shuffle{position:absolute;bottom:-6px;left:50%;translate:-50% 0;font:inherit;font-size:14px;color:inherit;background:none;border:0;opacity:.7;cursor:pointer;min-height:44px;padding:0 12px}
+.shuffle:hover{opacity:1}
+.name{margin-top:clamp(12px,2vw,24px)}
+.name h1{font-size:clamp(58px,10vw,168px);line-height:.88;letter-spacing:-.035em}
+.name .cap{display:block;font-style:italic;font-size:clamp(50px,8.6vw,146px);color:var(--red);padding-left:.55em}
+@media(max-width:600px){.name .cap{padding-left:0}.hero-top{flex-direction:column}}
+
+/* film */
+#film{--sbg:#08100d;--sfg:var(--bone)}
+.film-grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(28px,5vw,80px);align-items:end}
+.film-grid .q{font-size:clamp(30px,3.4vw,48px)}
+.label{font-size:15px;opacity:.7;margin-bottom:18px}
+.poster{position:relative;display:block;width:100%;aspect-ratio:16/9;border-radius:6px;overflow:hidden;background:#0a1d17;text-decoration:none;isolation:isolate}
+.poster svg{position:absolute;inset:0;width:100%;height:100%;transition:transform 1.4s cubic-bezier(.2,.7,.2,1)}
+.poster:hover svg{transform:scale(1.05)}
+.play{position:absolute;left:50%;top:50%;width:clamp(76px,9vw,116px);aspect-ratio:1;translate:-50% -50%;border-radius:50%;background:var(--red);display:grid;place-items:center;transition:scale .4s}
+.poster:hover .play{scale:1.1}
+.play::after{content:"";border-left:22px solid #f4efe6;border-top:13px solid transparent;border-bottom:13px solid transparent;margin-left:6px}
+.poster iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.poster .pl{position:absolute;left:20px;bottom:16px;font-weight:500;color:#f4efe6}
+@media(max-width:760px){.film-grid{grid-template-columns:1fr}}
+
+/* vallei */
+#vallei{--sbg:var(--jade);--sfg:var(--bone)}
+.vallei-head{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(24px,5vw,80px);align-items:end;margin-bottom:clamp(40px,6vw,80px)}
+.vallei-head p{font-size:18px;margin:0}
+.doors{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(16px,3vw,40px)}
+.door{color:var(--ink)!important;position:relative;display:flex;flex-direction:column;justify-content:space-between;min-height:clamp(380px,40vw,520px);padding:clamp(24px,3vw,40px);border-radius:14px;background:#f4efe6;color:var(--ink);text-decoration:none;overflow:hidden;transition:transform .6s cubic-bezier(.2,.8,.2,1),box-shadow .6s}
+.door:hover{transform:translateY(-10px) rotate(-1deg);box-shadow:0 40px 60px -30px rgba(0,0,0,.6)}
+.door:nth-child(2):hover{transform:translateY(-10px) rotate(1deg)}
+.door .idx{display:flex;justify-content:space-between;font-family:"Instrument Serif",Georgia,serif;font-size:28px;line-height:1}
+.door svg.art{position:absolute;right:-8%;top:12%;width:62%;opacity:.95;transition:transform 1s cubic-bezier(.2,.7,.2,1)}
+.door:hover svg.art{transform:translate(-4%,-3%) rotate(-4deg)}
+.door h3{font-size:clamp(40px,4.6vw,64px);margin-bottom:14px}
+.door p{max-width:30ch;position:relative}
+.door .go{font-weight:700;position:relative}
+@media(max-width:700px){.vallei-head,.doors{grid-template-columns:1fr}}
+
+/* partners */
+#partners{--sbg:var(--jade);--sfg:var(--bone);padding-block:0 clamp(56px,7vw,100px)}
+#partners .label{padding:0 max(5vw,16px)}
+.marquee{overflow:hidden;border-block:1px solid color-mix(in srgb,currentColor 25%,transparent);padding:22px 0;mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+.track{display:flex;width:max-content;animation:slide 60s linear infinite}
+.track span{font-family:"Instrument Serif",Georgia,serif;font-size:clamp(26px,3vw,40px);white-space:nowrap;padding:0 .9em}
+.track span::after{content:"✦";font-size:.45em;vertical-align:middle;margin-left:1.8em;color:var(--red)}
+.marquee:hover .track{animation-play-state:paused}
+@keyframes slide{to{transform:translateX(-50%)}}
+.ask{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:20px;padding:clamp(48px,6vw,80px) max(5vw,16px) 0;max-width:1240px;margin:0 auto}
+.ask h3{max-width:22ch}
+
+/* bedrijven */
+#bedrijven{--sbg:var(--ox);--sfg:#f6e9e2}
+.split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(32px,6vw,100px)}
+blockquote{margin:0;font-family:"Instrument Serif",Georgia,serif;font-size:clamp(26px,2.7vw,38px);line-height:1.2;text-wrap:pretty}
+blockquote::before{content:"“";display:block;font-size:3.4em;line-height:.6;color:var(--red);height:.5em}
+cite{display:block;font:500 15px/1.5 Manrope,sans-serif;font-style:normal;margin-top:24px;opacity:.8}
+cite b{display:block;font-size:17px;opacity:1}
+.closing{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:24px;margin-top:clamp(56px,7vw,100px);padding-top:32px;border-top:1px solid color-mix(in srgb,currentColor 30%,transparent)}
+.closing h3{font-size:clamp(36px,4.4vw,60px)}
+@media(max-width:760px){.split,.over-grid{grid-template-columns:1fr}.portrait{max-width:340px}.big-mono{right:-4%}}
+
+/* onderwijs */
+#onderwijs{--sbg:var(--saf);--sfg:#1b1410}
+.pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(16px,3vw,32px);margin-top:clamp(40px,5vw,64px)}
+.pc{background:#f8eedb;color:#1b1410;border-radius:14px;padding:clamp(24px,3vw,36px);display:grid;grid-template-columns:88px minmax(0,1fr);gap:20px;align-items:start;transition:transform .5s cubic-bezier(.2,.8,.2,1)}
+.pc:hover{transform:rotate(-1.2deg) translateY(-6px)}
+.pc:nth-child(2):hover{transform:rotate(1.2deg) translateY(-6px)}
+.pc h3{margin-bottom:8px}
+.pc p{margin:0}
+@media(max-width:700px){.pair{grid-template-columns:1fr}}
+
+/* over */
+#over{--sbg:var(--bone);--sfg:var(--ink)}
+.over-grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(32px,6vw,100px);align-items:start}
+.portrait{position:relative;margin:0 0 clamp(40px,5vw,60px);width:100%;max-width:440px}
+.pcard{position:relative;aspect-ratio:4/5;border-radius:16px;background:#f8f4ec;padding:12px;box-shadow:0 30px 50px -30px rgba(21,32,28,.55);transform:rotate(-3deg);transition:transform .8s cubic-bezier(.2,.8,.2,1)}
+.pcard:hover{transform:rotate(0) translateY(-6px)}
+.pcard img{display:block;width:100%;height:100%;object-fit:cover;object-position:50% 30%;border-radius:8px}
+.pcard .c{position:absolute;font-family:"Instrument Serif",Georgia,serif;font-size:22px;line-height:1;color:var(--red);background:#f8f4ec;padding:6px 9px;border-radius:7px}
+.pcard .tl{top:20px;left:20px}
+.pcard .br{bottom:20px;right:20px;transform:rotate(180deg)}
+.big-mono{position:absolute;width:38%;right:-7%;bottom:-9%;aspect-ratio:1;color:var(--ink)}
+.big-mono .bgc{fill:#f1ebe1;stroke:none}
+.big-mono circle,.big-mono text{fill:none;stroke:currentColor;stroke-width:2.4}
+.big-mono text{font-family:"Instrument Serif",Georgia,serif;stroke-width:2.2}
+.big-mono .fillG{fill:var(--red);stroke:none;opacity:0;transition:opacity 1.2s .9s}
+.big-mono.on .fillG{opacity:1}
+.drawn{stroke-dasharray:1400;stroke-dashoffset:0;transition:stroke-dashoffset 2.4s cubic-bezier(.6,.1,.2,1)}
+.pre .drawn{stroke-dashoffset:1400}
+.over-grid h2{font-size:clamp(38px,4.8vw,68px)}
+@media(max-width:760px){.over-grid{grid-template-columns:1fr}.portrait{max-width:min(340px,82%)}}
+.lead{font-size:clamp(20px,1.8vw,24px);font-weight:500;margin:28px 0 8px;max-width:34ch}
+.second{font-family:"Instrument Serif",Georgia,serif;font-style:italic;font-size:clamp(24px,2.2vw,30px);color:#b22f1c;margin-bottom:32px}
+
+/* contact */
+#contact{--sbg:var(--red);--sfg:#1c0d09}
+.three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(12px,2vw,24px);margin:clamp(36px,5vw,60px) 0}
+.tc{min-height:clamp(220px,24vw,320px);border-radius:12px;background:#1c0d09;color:#f4efe6;padding:20px;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;transition:transform .7s cubic-bezier(.2,.8,.2,1);transform-style:preserve-3d}
+.tc .c{display:flex;justify-content:space-between;font-family:"Instrument Serif",Georgia,serif;font-size:22px;line-height:1;color:var(--red)}
+.tc .c:last-child{transform:rotate(180deg)}
+.tc p{font-family:"Instrument Serif",Georgia,serif;font-size:clamp(24px,2.6vw,38px);line-height:1.05;margin:0}
+.tc:hover{transform:translateY(-8px) rotate(-2deg)}
+.tc.flip{transform:rotateY(360deg)}
+.contact-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(28px,5vw,80px);align-items:end}
+.details{font-size:17px;line-height:1.9}
+.details b{font-weight:700}
+#contact .cta:hover{background:#1c0d09;color:var(--red)}
+@media(max-width:760px){.three{grid-template-columns:1fr;}.tc{min-height:150px}.contact-grid{grid-template-columns:1fr}}
+
+/* footer */
+footer{background:var(--night);color:var(--bone);padding:56px max(5vw,16px) 40px;position:relative;z-index:2}
+.foot{max-width:1240px;margin:0 auto;display:flex;flex-wrap:wrap;gap:24px 40px;align-items:center;justify-content:space-between}
+.sign{font-family:"Instrument Serif",Georgia,serif;font-size:clamp(26px,3vw,40px);display:flex;align-items:center;gap:16px}
+footer nav{display:flex;flex-wrap:wrap;gap:8px 24px;font-size:15px}
+footer nav a{text-decoration:none;opacity:.8;padding:10px 0}
+footer nav a:hover{opacity:1}
+.small{font-size:13px;opacity:.6;width:100%}
+
+/* menu: de hand wordt gedeeld */
+.deck{position:fixed;inset:0;z-index:80;background:rgba(8,16,13,.96);display:grid;place-items:center;padding:24px;opacity:0;visibility:hidden;transition:opacity .4s,visibility .4s}
+.deck.open{opacity:1;visibility:visible}
+.deck .hand{display:flex;flex-wrap:wrap;justify-content:center;gap:14px;max-width:980px}
+.deck a{width:min(170px,40vw);aspect-ratio:2/3;border-radius:12px;background:#f4efe6;color:var(--ink);text-decoration:none;padding:14px;display:flex;flex-direction:column;justify-content:space-between;transform:translateY(60vh) rotate(calc(var(--k) * 7deg - 14deg));transition:transform .7s cubic-bezier(.2,.9,.2,1) calc(var(--k) * 70ms)}
+.deck.open a{transform:translateY(0) rotate(calc(var(--k) * 3deg - 6deg))}
+.deck.open a:hover{transform:translateY(-14px) rotate(0)}
+.deck a .c{font-family:"Instrument Serif",Georgia,serif;font-size:24px;line-height:1;color:var(--red)}
+.deck a .c:last-child{align-self:flex-end;transform:rotate(180deg)}
+.deck a b{font-family:"Instrument Serif",Georgia,serif;font-weight:400;font-size:clamp(24px,3vw,30px);line-height:1.05;text-align:center}
+.deck .x{position:absolute;top:18px;right:max(5vw,16px);font:inherit;color:var(--bone);background:none;border:1px solid currentColor;border-radius:999px;min-height:44px;padding:0 18px;cursor:pointer}
+@media(max-width:600px){.deck a{width:calc(50% - 8px);aspect-ratio:auto;min-height:120px}}
+
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}.track{flex-wrap:wrap;width:auto}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+
+<!-- gedeelde tekeningen voor de speelkaarten -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+ <defs>
+  <pattern id="scales" width="20" height="14" patternUnits="userSpaceOnUse">
+   <path d="M0 14a10 10 0 0 1 20 0M-10 7a10 10 0 0 1 20 0M10 7a10 10 0 0 1 20 0" fill="none" stroke="#e5462e" stroke-width="1.2" opacity=".55"/>
+  </pattern>
+  <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f6d58a"/><stop offset="1" stop-color="#f4efe6"/></linearGradient>
+  <linearGradient id="m1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2e6a5a"/><stop offset="1" stop-color="#163a31"/></linearGradient>
+  <linearGradient id="red" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f06a4f"/><stop offset="1" stop-color="#b8301c"/></linearGradient>
+  <symbol id="corner" viewBox="0 0 200 300">
+   <text x="14" y="32" font-family="Instrument Serif,Georgia,serif" font-size="24" fill="#e5462e">GC</text>
+   <path d="M24 42l6 8-6 8-6-8z" fill="#e5462e"/>
+   <g transform="rotate(180 100 150)"><text x="14" y="32" font-family="Instrument Serif,Georgia,serif" font-size="24" fill="#e5462e">GC</text><path d="M24 42l6 8-6 8-6-8z" fill="#e5462e"/></g>
+   <rect x="8" y="8" width="184" height="284" rx="8" fill="none" stroke="#15201c" stroke-opacity=".18"/>
+  </symbol>
+  <symbol id="dragon" viewBox="0 0 200 200">
+   <ellipse cx="100" cy="188" rx="62" ry="7" fill="#15201c" opacity=".14"/>
+   <path d="M52 186C44 128 70 84 112 70l52-12-16 22 22 8-44 12c-22 8-34 34-30 86z" fill="url(#red)"/>
+   <path d="M112 70l-14-40 30 34z" fill="#163a31"/>
+   <path d="M128 66l-2-30 18 26z" fill="#163a31"/>
+   <path d="M52 186C44 128 70 84 112 70" fill="none" stroke="#f6d58a" stroke-width="2" opacity=".7"/>
+   <circle cx="138" cy="74" r="4.5" fill="#15201c"/><circle cx="139.5" cy="72.5" r="1.4" fill="#f4efe6"/>
+   <path d="M72 168a10 10 0 0 1 18 0M68 146a10 10 0 0 1 18 0M74 124a10 10 0 0 1 18 0M88 104a10 10 0 0 1 18 0M80 160a8 8 0 0 1 14 0M84 138a8 8 0 0 1 14 0" fill="none" stroke="#7a1d10" stroke-width="2" opacity=".55"/>
+  </symbol>
+  <symbol id="valley" viewBox="0 0 200 200">
+   <rect width="200" height="200" fill="url(#sky)"/>
+   <circle cx="132" cy="70" r="26" fill="#e5462e"/>
+   <path d="M0 130l44-48 30 30 36-52 50 62 40-28v106H0z" fill="#8fb3a4"/>
+   <path d="M0 150l56-40 34 26 40-34 70 56v42H0z" fill="url(#m1)"/>
+   <path d="M0 176c40-16 70 6 110-8s60-10 90 0v32H0z" fill="#0d1613"/>
+   <path d="M96 200c4-14 26-18 24-30s-22-14-14-26" fill="none" stroke="#f6d58a" stroke-width="3" stroke-dasharray="6 6"/>
+  </symbol>
+  <symbol id="pawn" viewBox="0 0 200 200">
+   <ellipse cx="104" cy="182" rx="58" ry="9" fill="#15201c" opacity=".16"/>
+   <path d="M64 178c0-22 16-28 22-56h28c6 28 22 34 22 56z" fill="#163a31"/>
+   <path d="M100 122h14c6 28 22 34 22 56h-26c0-26-6-36-10-56z" fill="#0d1613" opacity=".45"/>
+   <rect x="74" y="112" width="52" height="12" rx="6" fill="#163a31"/>
+   <circle cx="100" cy="84" r="30" fill="#163a31"/>
+   <path d="M100 54a30 30 0 0 1 0 60a30 30 0 0 0 0-60z" fill="#0d1613" opacity=".4"/>
+   <circle cx="90" cy="74" r="8" fill="#f4efe6" opacity=".35"/>
+   <path d="M88 54l12-18 12 18" fill="#e5462e"/>
+  </symbol>
+ </defs>
+</svg>
+
+<header>
+ <a href="#home" aria-label="Geertje Caris, naar boven">
+  <svg class="mono" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="46" fill="none" stroke="currentColor" stroke-width="1.5"/><text x="50" y="64" text-anchor="middle" font-size="42" fill="currentColor">GC</text></svg>
+ </a>
+ <nav class="top" aria-label="Hoofdmenu">
+  <a href="#home">Home</a><a href="#bedrijven">Bedrijven</a><a href="#onderwijs">Onderwijs</a><a href="#over">Over Geertje</a><a href="#contact">Contact</a>
+ </nav>
+ <button class="menu-btn" id="openMenu" aria-expanded="false" aria-controls="deck">Menu</button>
+</header>
+
+<div class="deck" id="deck" role="dialog" aria-label="Menu" aria-hidden="true">
+ <button class="x" id="closeMenu">Sluiten</button>
+ <div class="hand">
+  <a href="#home" style="--k:0"><span class="c">H ◆</span><b>Home</b><span class="c">H ◆</span></a>
+  <a href="#bedrijven" style="--k:1"><span class="c">B ◆</span><b>Bedrijven</b><span class="c">B ◆</span></a>
+  <a href="#onderwijs" style="--k:2"><span class="c">O ◆</span><b>Onderwijs</b><span class="c">O ◆</span></a>
+  <a href="#over" style="--k:3"><span class="c">G ◆</span><b>Over Geertje</b><span class="c">G ◆</span></a>
+  <a href="#contact" style="--k:4"><span class="c">C ◆</span><b>Contact</b><span class="c">C ◆</span></a>
+ </div>
+</div>
+
+<main>
+<section id="home" class="band" data-bg="#0d1613" data-fg="#f1ebe1">
+ <div class="hero-top wrap" style="width:100%">
+  <p class="statement">Spel verandert het perspectief.</p>
+  <p class="intro">Ik ontwerp ervaringen die mensen raken, verbinden en in beweging brengen.</p>
+ </div>
+ <div class="stage" id="stage">
+  <div class="fan dealing" id="fan" role="img" aria-label="Speelkaarten van De Drakenvallei">
+   <div class="card" style="--i:0;z-index:0"><img src="kaarten/achterkant.jpg" alt="" width="560" height="793" draggable="false"></div>
+   <div class="card" style="--i:1;z-index:1"><img src="kaarten/kijkdraak.jpg" alt="" width="560" height="793" draggable="false"></div>
+   <div class="card" style="--i:2;z-index:2"><img src="kaarten/nieuwschierige_draak.jpg" alt="" width="560" height="793" draggable="false"></div>
+   <div class="card" style="--i:3;z-index:3"><img src="kaarten/smaakdraak.jpg" alt="" width="560" height="793" draggable="false"></div>
+   <div class="card" style="--i:4;z-index:4"><img src="kaarten/vergeetdraak.jpg" alt="" width="560" height="793" draggable="false"></div>
+  </div>
+  <button class="shuffle" id="shuffle">Schud de kaarten ↻</button>
+ </div>
+ <div class="name wrap" style="width:100%">
+  <h1>Geertje Caris<span class="cap">Game Captain</span></h1>
+ </div>
+</section>
+
+<section id="film" class="band" data-bg="#08100d" data-fg="#f1ebe1">
+ <div class="wrap film-grid">
+  <div>
+   <p class="label">Bij de film</p>
+   <h2 class="q">Wat gebeurt er als profvoetballers van Roda JC De Drakenvallei betreden?</h2>
+   <p style="margin-top:28px"><a class="cta" id="filmCta" href="https://vimeo.com/1234202506/7d473c5042" target="_blank" rel="noopener">Bekijk de film <span>→</span></a></p>
+  </div>
+  <a class="poster" id="poster" href="https://vimeo.com/1234202506/7d473c5042" target="_blank" rel="noopener" aria-label="Bekijk de film op Vimeo">
+   <svg viewBox="0 0 640 360" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <rect width="640" height="360" fill="#0f2a22"/>
+    <rect width="640" height="360" fill="url(#scales)" opacity=".35"/>
+    <g fill="none" stroke="#f4efe6" stroke-opacity=".28" stroke-width="2"><rect x="40" y="30" width="560" height="300"/><path d="M320 30v300"/><circle cx="320" cy="180" r="56"/><rect x="40" y="110" width="70" height="140"/><rect x="530" y="110" width="70" height="140"/></g>
+    <svg x="380" y="150" width="240" height="240" viewBox="0 0 200 200" opacity=".9"><use href="#dragon"/></svg>
+    <rect width="640" height="360" fill="url(#fade)"/>
+    <linearGradient id="fade" x1="0" y1="0" x2="0" y2="1"><stop offset=".5" stop-color="#08100d" stop-opacity="0"/><stop offset="1" stop-color="#08100d" stop-opacity=".8"/></linearGradient>
+   </svg>
+   <span class="play"></span>
+   <span class="pl">De Drakenvallei · de film</span>
+  </a>
+ </div>
+</section>
+
+<section id="vallei" class="band" data-bg="#163a31" data-fg="#f1ebe1">
+ <div class="wrap">
+  <div class="vallei-head">
+   <h2>De Drakenvallei</h2>
+   <p>Een levensgrote spelervaring die zichtbaar maakt wat woorden niet kunnen. Ontworpen voor organisaties en scholen die verder willen kijken.</p>
+  </div>
+  <div class="doors">
+   <a class="door" href="#bedrijven">
+    <span class="idx"><span>B</span><span style="color:var(--red)">◆</span></span>
+    <svg class="art" viewBox="0 0 200 200" aria-hidden="true"><use href="#dragon"/></svg>
+    <div><h3>Bedrijven</h3><p>Voor teams die durven te zien wat er écht speelt.</p><span class="go">→ Ontdek de teamervaring</span></div>
+   </a>
+   <a class="door" href="#onderwijs">
+    <span class="idx"><span>O</span><span style="color:var(--red)">◆</span></span>
+    <svg class="art" viewBox="0 0 200 200" aria-hidden="true"><use href="#pawn"/></svg>
+    <div><h3>Onderwijs</h3><p>Voor scholen die op zoek zijn naar gezonde voedingseducatie en talent zichtbaar willen maken.</p><span class="go">→ Ontdek de onderwijservaring</span></div>
+   </a>
+  </div>
+ </div>
+</section>
+
+<section id="partners" data-bg="#163a31" data-fg="#f1ebe1">
+ <p class="label">In vertrouwen met</p>
+ <div class="marquee"><div class="track" id="track"></div></div>
+ <div class="ask">
+  <h3>Benieuwd wat het spel bij jullie zichtbaar maakt?</h3>
+  <a class="cta" href="#contact">Plan een gesprek <span>→</span></a>
+ </div>
+</section>
+
+<section id="bedrijven" class="band" data-bg="#4a1418" data-fg="#f6e9e2">
+ <div class="wrap">
+  <p class="label">Bedrijven</p>
+  <div class="split">
+   <div>
+    <h2>Waar het spel begint, durft een team te spreken.</h2>
+    <p style="margin-top:32px;font-size:18px">Op het levensgrote speelveld van De Drakenvallei vallen titels en vaste rollen weg. Wat overblijft, is hoe een team écht samenwerkt: wie leidt, wie volgt en wat onuitgesproken blijft.</p>
+    <p>Elke ervaring wordt op maat ontworpen en persoonlijk begeleid door Geertje als Game Captain.</p>
+    <p><em>Het spel blijft hetzelfde. Het team verandert en groeit.</em></p>
+   </div>
+   <figure style="margin:0">
+    <blockquote>Dit spel maakt het op een speelse manier mogelijk dat je de harde werkelijkheid met elkaar kunt bespreken. Juist door de setting kom je snel tot de kern. De angst of drempel om je uit te spreken wordt verkleind door het spel.</blockquote>
+    <cite><b>Erwin Kuil</b>Directeur Facility Services, Universiteit Maastricht</cite>
+   </figure>
+  </div>
+  <div class="closing">
+   <h3>Een ervaring die blijft.</h3>
+   <a class="cta" href="#contact">Vraag een kennismaking aan <span>→</span></a>
+  </div>
+ </div>
+</section>
+
+<section id="onderwijs" class="band" data-bg="#efb53d" data-fg="#1b1410">
+ <div class="wrap">
+  <p class="label">Onderwijs</p>
+  <div class="split">
+   <h2>Leren begint bij nieuwsgierigheid.</h2>
+   <p style="font-size:19px;align-self:end">In De Drakenvallei ontdekken kinderen al spelend wie ze zijn, wat ze kunnen en hoe ze samen verder komen.</p>
+  </div>
+  <div class="pair">
+   <div class="pc"><svg viewBox="0 0 200 200" aria-hidden="true"><use href="#pawn"/></svg><div><h3>Talent</h3><p>Kinderen zien hun eigen kracht en die van de ander, met meervoudige intelligentie als basis.</p></div></div>
+   <div class="pc"><svg viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="112" r="64" fill="url(#red)"/><path d="M100 50c-4-18 6-30 22-34-2 16-10 26-22 34z" fill="#163a31"/><path d="M100 50v-14" stroke="#15201c" stroke-width="4" stroke-linecap="round"/><ellipse cx="78" cy="94" rx="12" ry="18" fill="#f4efe6" opacity=".35"/></svg><div><h3>Gezonde voeding</h3><p>Gezond kiezen wordt een ervaring: geen les, maar een avontuur.</p></div></div>
+  </div>
+  <div class="closing">
+   <p style="margin:0;font-size:18px;max-width:40ch">Leerkrachten worden getraind om het spel zelf te blijven spelen. Zo blijft de impact.</p>
+   <a class="cta" href="#contact">Breng De Drakenvallei naar jouw school <span>→</span></a>
+  </div>
+ </div>
+</section>
+
+<section id="over" class="band" data-bg="#f1ebe1" data-fg="#15201c">
+ <div class="wrap over-grid">
+  <figure class="portrait">
+   <div class="pcard"><img src="geertje.jpg" alt="Portret van Geertje Caris" width="800" height="800"><span class="c tl">GC ◆</span></div>
+  <svg class="big-mono" id="bigMono" viewBox="0 0 400 400" role="img" aria-label="Monogram GC">
+   <circle class="bgc" cx="200" cy="200" r="196"/>
+   <circle class="drawn" cx="200" cy="200" r="186"/>
+   <circle class="drawn" cx="200" cy="200" r="170" style="stroke:var(--red)"/>
+   <text class="drawn" x="200" y="262" text-anchor="middle" font-size="190">GC</text>
+   <path class="fillG" d="M200 336l10 14-10 14-10-14z"/>
+   <path class="fillG" d="M200 36l10 14-10 14-10-14z"/>
+  </svg>
+  </figure>
+  <div>
+   <p class="label">Over Geertje</p>
+   <h2>GC staat voor Geertje Caris. En voor Game Captain.</h2>
+   <p class="lead">Ik ontwerp het spel, zet het speelveld uit en leid mensen naar de kern.</p>
+   <p class="second">Spel is mijn middel. Ontwikkeling mijn doel.</p>
+   <p>Vanuit kunst, onderwijs en ondernemerschap creëer ik ervaringen die je niet alleen begrijpt, maar voelt. De Drakenvallei is daar het hart van. Ik bedenk het concept en breng het zelf tot leven.</p>
+   <p>Wat mij drijft, is het moment waarop mensen durven spelen en zich openstellen voor het onverwachte. Juist dan ontstaan gesprekken, inzichten en verbindingen, waar tijdens drukke werkdagen minder aandacht voor is. Ik prikkel potentie en innerlijke drijfveren en haal ze boven water.</p>
+   <p style="margin-top:28px"><a class="cta" href="#contact">Maak kennis <span>→</span></a></p>
+  </div>
+ </div>
+</section>
+
+<section id="contact" class="band" data-bg="#e5462e" data-fg="#1c0d09">
+ <div class="wrap">
+  <p class="label">Contact</p>
+  <h2 style="font-size:clamp(48px,8vw,120px)">Breng mensen in beweging.</h2>
+  <p style="font-size:clamp(20px,2vw,26px);font-weight:500;margin-top:28px">Het spel laat zien wat er écht speelt.</p>
+  <div class="three" id="three">
+   <div class="tc" tabindex="0"><span class="c"><span>I</span><span>◆</span></span><p>Wat schuurt.</p><span class="c"><span>I</span><span>◆</span></span></div>
+   <div class="tc" tabindex="0"><span class="c"><span>II</span><span>◆</span></span><p>Wat ontbreekt.</p><span class="c"><span>II</span><span>◆</span></span></div>
+   <div class="tc" tabindex="0"><span class="c"><span>III</span><span>◆</span></span><p>Wat nog onbenut is.</p><span class="c"><span>III</span><span>◆</span></span></div>
+  </div>
+  <div class="contact-grid">
+   <div>
+    <p style="font-size:18px">In De Drakenvallei komt boven wat in een vergadering verborgen blijft. Jullie cultuur, waarden en de manier waarop je elkaars kwaliteiten ziet, worden zichtbaar en bespreekbaar.</p>
+    <p style="font-size:18px;font-weight:700">Het begint met een persoonlijke kennismaking.</p>
+   </div>
+   <div class="details">
+    <b>Geertje Caris · Game Captain</b><br>
+    <a href="mailto:info@bureau-21.nl?subject=Kennismaking%20De%20Drakenvallei">info@bureau-21.nl</a><br>
+    <a href="https://www.linkedin.com/in/geertje-caris-a5a26564/" target="_blank" rel="noopener">LinkedIn</a>
+    <p style="margin-top:20px"><a class="cta" href="mailto:info@bureau-21.nl?subject=Kennismaking%20De%20Drakenvallei">Plan een gesprek <span>→</span></a></p>
+   </div>
+  </div>
+ </div>
+</section>
+</main>
+
+<footer>
+ <div class="foot">
+  <div class="sign"><svg class="mono" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="46" fill="none" stroke="currentColor" stroke-width="1.5"/><text x="50" y="64" text-anchor="middle" font-size="42" fill="currentColor">GC</text></svg>Geertje Caris · Game Captain</div>
+  <nav aria-label="Footer"><a href="#home">Home</a><a href="#bedrijven">Bedrijven</a><a href="#onderwijs">Onderwijs</a><a href="#over">Over Geertje</a><a href="#contact">Contact</a></nav>
+  <p class="small">© 2026 Geertje Caris · Game Captain · info@bureau-21.nl</p>
+ </div>
+</footer>
+
+<script>window.EMBED_VIDEO=true</script>
+<script>
+{
+ const partners=["MOVARE","De Gezonde Basisschool van de Toekomst","Parkstad Limburg","Gezond in Mijn Streek","GIMS","Roda JC","Nationaal Programma Heerlen-Noord","Universiteit Maastricht","Provincie Limburg"];
+ const track=document.getElementById('track');
+ const row=partners.map(p=>'<span>'+p+'</span>').join('');
+ track.innerHTML=row+'<span aria-hidden="true" style="display:contents">'+row+'</span>';
+
+ const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+ const root=document.documentElement;
+
+ // achtergrond vloeit per sectie over
+ root.classList.add('live');
+ const body=document.body;
+ const secs=[...document.querySelectorAll('main section')];
+ const setTone=s=>{body.style.backgroundColor=s.dataset.bg;body.style.color=s.dataset.fg;root.style.setProperty('--bg',s.dataset.bg);root.style.setProperty('--fg',s.dataset.fg)};
+ setTone(secs[0]);
+ const toneObs=new IntersectionObserver(es=>{for(const e of es)if(e.isIntersecting)setTone(e.target)},{rootMargin:'-48% 0px -48% 0px'});
+ secs.forEach(s=>toneObs.observe(s));
+
+ // de waaier: delen, kantelen, schudden
+ const fan=document.getElementById('fan');
+ const cards=[...fan.children];
+ const fronts=['kijkdraak','nieuwschierige_draak','smaakdraak','vergeetdraak','kookdraak'];
+ fronts.forEach(f=>{const i=new Image();i.src='kaarten/'+f+'.jpg'});
+ requestAnimationFrame(()=>setTimeout(()=>fan.classList.remove('dealing'),reduce?0:350));
+ const shuffle=()=>{
+  fan.classList.add('dealing');
+  setTimeout(()=>{
+   const pick=fronts.slice().sort(()=>Math.random()-.5).slice(0,cards.length-1);
+   const faces=['achterkant',...pick].sort(()=>Math.random()-.5);
+   cards.forEach((c,n)=>{c.querySelector('img').src='kaarten/'+faces[n]+'.jpg'});
+   fan.classList.remove('dealing');
+  },reduce?0:450);
+ };
+ document.getElementById('shuffle').addEventListener('click',shuffle);
+ cards.forEach(c=>c.addEventListener('click',shuffle));
+ const stage=document.getElementById('stage');
+ if(!reduce)stage.addEventListener('pointermove',e=>{
+  const r=stage.getBoundingClientRect();
+  const x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;
+  fan.style.transform='rotateY('+(x*18)+'deg) rotateX('+(-y*14)+'deg)';
+ });
+ stage.addEventListener('pointerleave',()=>{fan.style.transform=''});
+
+ // monogram tekent zichzelf
+ const mono=document.getElementById('bigMono');
+ if(!reduce){
+  mono.classList.add('pre');
+  const monoObs=new IntersectionObserver(es=>{if(es[0].isIntersecting){mono.classList.remove('pre');mono.classList.add('on');monoObs.disconnect()}},{threshold:.4});
+  monoObs.observe(mono);
+ } else mono.classList.add('on');
+
+ // drie kaarten draaien om
+ document.querySelectorAll('.tc').forEach(t=>{
+  const flip=()=>{t.classList.toggle('flip')};
+  t.addEventListener('click',flip);
+  t.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();flip()}});
+ });
+
+ // film: op de live site speelt hij in de pagina zelf
+ if(window.EMBED_VIDEO){
+  const poster=document.getElementById('poster');
+  const play=e=>{
+   e.preventDefault();
+   if(poster.querySelector('iframe'))return;
+   const f=document.createElement('iframe');
+   f.src='https://player.vimeo.com/video/1234202506?h=7d473c5042&autoplay=1&title=0&byline=0&portrait=0&color=e5462e';
+   f.allow='autoplay; fullscreen; picture-in-picture';f.allowFullscreen=true;f.title='De Drakenvallei, de film';
+   poster.replaceChildren(f);poster.removeAttribute('href');
+   poster.scrollIntoView({behavior:reduce?'auto':'smooth',block:'center'});
+  };
+  poster.addEventListener('click',play);
+  document.getElementById('filmCta').addEventListener('click',play);
+ }
+
+ // menu: de hand wordt gedeeld
+ const deck=document.getElementById('deck'),ob=document.getElementById('openMenu');
+ const setMenu=open=>{deck.classList.toggle('open',open);deck.setAttribute('aria-hidden',!open);ob.setAttribute('aria-expanded',open);if(open)deck.querySelector('a').focus()};
+ ob.addEventListener('click',()=>setMenu(true));
+ document.getElementById('closeMenu').addEventListener('click',()=>setMenu(false));
+ deck.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>setMenu(false)));
+ addEventListener('keydown',e=>{if(e.key==='Escape')setMenu(false)});
+}
+</script>
+</body>
+</html>
